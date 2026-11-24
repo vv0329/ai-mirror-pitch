@@ -1,0 +1,2814 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>LIVVIUM · In-Store Mirror</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --magenta: #ff1dbf;
+      --rose-deep: #ad0c79;
+      --rose-soft: #ff6bd4;
+      --rose-mist: #fce4f4;
+      --rose-lilac: #d4a8ef;
+      --paper: #f7f2f6;
+      --ink: #111111;
+      --ink-soft: #1c1c1e;
+      --mute: #3a3a3c;
+      --mute-2: #8e8e93;
+      --white: #ffffff;
+      --line: #e8dfe6;
+      --orange: #ff7a00;
+      --gold: #e6a100;
+      --blend: linear-gradient(104deg, #ff8ad8 6%, #ff5ec8 28%, #ff1dbf 52%, #e056d0 74%, #d48ae4 90%);
+      --slide-w: 1920px;
+      --slide-h: 1080px;
+      --space-1: 8px;
+      --space-2: 12px;
+      --space-3: 16px;
+      --space-4: 20px;
+      --space-5: 28px;
+      --space-6: 36px;
+      --card-pad: clamp(16px, 1.6cqw + 0.6vw, 28px);
+      --card-gap: clamp(12px, 1.2cqw + 0.4vw, 22px);
+      --card-radius: 16px;
+      --section-gap: clamp(16px, 1.8cqw + 0.5vw, 28px);
+      --lh-display: 1.08;
+      --lh-title: 1.18;
+      --lh-body: 1.55;
+      --lh-tight: 1.35;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html {
+      height: auto;
+      scroll-behavior: smooth;
+    }
+    body {
+      min-height: 100dvh;
+      height: auto;
+      background: #1c1c1e;
+      color: var(--ink);
+      font-family: Montserrat, "Segoe UI", sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .deck-shell {
+      min-height: 100dvh;
+      display: block;
+      background: #1c1c1e;
+    }
+
+    .stage {
+      width: 100%;
+      max-width: none;
+      aspect-ratio: auto;
+      position: relative;
+      overflow: visible;
+      border-radius: 0;
+      box-shadow: none;
+      background: transparent;
+      container-type: inline-size;
+      container-name: stage;
+    }
+
+    .slides {
+      width: 100%;
+      height: auto;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Browse mode: website-like stacked sections */
+    .slide {
+      position: relative;
+      inset: auto;
+      width: 100%;
+      height: auto;
+      min-height: min(100dvh, 900px);
+      padding: clamp(88px, 10vw, 110px) clamp(18px, 4.5vw, 72px) clamp(48px, 6vw, 72px);
+      background:
+        radial-gradient(ellipse 70% 55% at 88% -10%, rgba(255,29,191,0.10), transparent 60%),
+        radial-gradient(ellipse 50% 40% at 0% 100%, rgba(212,168,239,0.12), transparent 55%),
+        var(--paper);
+      opacity: 1;
+      pointer-events: auto;
+      transform: none;
+      display: flex;
+      flex-direction: column;
+      overflow: visible;
+      scroll-margin-top: 0;
+    }
+    .slide.active { z-index: 1; }
+
+    .slide-hero {
+      padding: 0;
+      min-height: 100dvh;
+      background:
+        linear-gradient(105deg, rgba(247,242,246,0.96) 0%, rgba(247,242,246,0.88) 42%, rgba(247,242,246,0.28) 68%, rgba(247,242,246,0.12) 100%),
+        url("assets/pitch-hero-mirror.jpg") center/cover no-repeat;
+    }
+    .slide-hero .hero-inner {
+      min-height: 100dvh;
+      height: auto;
+      padding: clamp(96px, 12vw, 120px) clamp(18px, 5vw, 72px) clamp(40px, 6vw, 64px);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      max-width: min(58%, 720px);
+      box-sizing: border-box;
+    }
+
+    .slide-close {
+      padding: 0;
+      min-height: 100dvh;
+      background:
+        linear-gradient(115deg, rgba(17,17,17,0.82) 0%, rgba(17,17,17,0.55) 45%, rgba(17,17,17,0.35) 100%),
+        url("assets/pitch-popup-magnet.jpg") center/cover no-repeat;
+      color: #fff;
+    }
+    .slide-close .hero-inner,
+    .slide-close > div {
+      min-height: 100dvh;
+    }
+
+    .kicker {
+      color: var(--magenta);
+      font-size: clamp(10px, max(1.05cqw, 1.208vw), 14px);
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      line-height: var(--lh-tight);
+      margin-bottom: var(--space-2);
+    }
+    .slide-close .kicker { color: #ff8ad8; }
+
+    h1 {
+      font-size: clamp(34px, max(4.4cqw, 5.06vw), 68px);
+      font-weight: 800;
+      letter-spacing: -0.045em;
+      line-height: var(--lh-display);
+      text-wrap: balance;
+    }
+    h2 {
+      font-size: clamp(28px, max(3.2cqw, 3.68vw), 48px);
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      line-height: var(--lh-display);
+      max-width: 18ch;
+      margin-bottom: var(--space-3);
+      text-wrap: balance;
+    }
+    h3 {
+      font-size: clamp(14px, max(1.25cqw, 1.438vw), 20px);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: var(--lh-title);
+      margin-bottom: 0.45em;
+      text-wrap: pretty;
+    }
+    .lede {
+      color: var(--mute);
+      font-size: clamp(13px, max(1.2cqw, 1.38vw), 20px);
+      line-height: var(--lh-body);
+      font-weight: 500;
+      max-width: 46ch;
+      text-wrap: pretty;
+    }
+    .slide-close .lede { color: rgba(255,255,255,0.82); }
+
+    .wordmark {
+      height: clamp(18px, max(1.6cqw, 1.84vw), 26px);
+      width: auto;
+      display: block;
+    }
+    .wordmark-light { filter: invert(1); }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: var(--section-gap);
+      gap: var(--space-3);
+    }
+    .topbar .meta {
+      color: var(--mute-2);
+      font-size: clamp(10px, max(0.9cqw, 1.035vw), 13px);
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .footer-bar {
+      margin-top: auto;
+      padding-top: var(--space-3);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-3);
+      border-top: 1px solid var(--line);
+      flex-shrink: 0;
+      position: relative;
+      z-index: 3;
+      background: var(--paper);
+    }
+    .footer-bar .sig {
+      color: var(--mute-2);
+      font-size: clamp(10px, max(0.9cqw, 1.035vw), 13px);
+      font-weight: 600;
+      letter-spacing: 0.04em;
+    }
+    .footer-bar .num {
+      color: var(--mute-2);
+      font-size: clamp(10px, max(0.9cqw, 1.035vw), 13px);
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45em;
+      padding: 0.55em 1.15em;
+      border-radius: 999px;
+      font-size: clamp(11px, max(0.95cqw, 1.092vw), 14px);
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      text-decoration: none;
+      color: inherit;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+    }
+    a.pill:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 22px rgba(255, 29, 191, 0.22);
+    }
+    a.pill:focus-visible {
+      outline: 2px solid var(--magenta);
+      outline-offset: 3px;
+    }
+    .pill-solid {
+      background: var(--blend);
+      color: #fff;
+    }
+    .pill-outline {
+      background: #fff;
+      color: var(--ink);
+      border: 1.5px solid transparent;
+      background-image:
+        linear-gradient(#fff, #fff),
+        var(--blend);
+      background-origin: border-box;
+      background-clip: padding-box, border-box;
+    }
+    .pill-ghost {
+      background: rgba(255,255,255,0.12);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.35);
+    }
+    a.pill-ghost:hover {
+      background: rgba(255,255,255,0.2);
+      box-shadow: 0 8px 22px rgba(0,0,0,0.25);
+    }
+
+    .cta-row { display: flex; gap: var(--space-2); margin-top: var(--space-5); flex-wrap: wrap; align-items: center; }
+    .cta-row .cta-note {
+      width: 100%;
+      margin-top: 2px;
+      font-size: clamp(11px, max(0.9cqw, 1.035vw), 13px);
+      font-weight: 600;
+      color: var(--mute-2);
+      line-height: var(--lh-tight);
+    }
+    .cta-row .cta-note a {
+      color: var(--magenta);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(255, 29, 191, 0.35);
+    }
+    .cta-row .cta-note a:hover { border-bottom-color: var(--magenta); }
+    .slide-close .cta-row .cta-note { color: rgba(255,255,255,0.65); }
+    .slide-close .cta-row .cta-note a {
+      color: #ff8ad8;
+      border-bottom-color: rgba(255, 138, 216, 0.45);
+    }
+
+    a.brand-link {
+      display: inline-flex;
+      text-decoration: none;
+      color: inherit;
+    }
+    a.brand-link:focus-visible {
+      outline: 2px solid var(--magenta);
+      outline-offset: 4px;
+      border-radius: 4px;
+    }
+    a.text-link {
+      color: var(--magenta);
+      font-weight: 700;
+      text-decoration: none;
+      border-bottom: 1px solid rgba(255, 29, 191, 0.35);
+    }
+    a.text-link:hover { border-bottom-color: var(--magenta); }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--card-gap); height: auto; min-height: 0; }
+    .grid-2.auto-h { height: auto; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: var(--card-gap); }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--card-gap); }
+    .grid-5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: clamp(8px, 1cqw, 14px); }
+
+    .slide > .grid-2,
+    .slide > .grid-3,
+    .slide > .situation-split,
+    .slide > .rate-chart {
+      min-height: 0;
+      overflow: visible;
+      height: auto;
+      flex: 0 0 auto;
+    }
+    html.is-presenting .slide > .grid-2,
+    html.is-presenting .slide > .grid-3,
+    html.is-presenting .slide > .situation-split {
+      overflow: hidden;
+      flex: 1 1 auto;
+      min-height: 0;
+      height: auto;
+    }
+    html.is-presenting .grid-2 { height: 100%; }
+    html.is-presenting .grid-2.auto-h { height: auto; }
+    .addon-card {
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      height: auto;
+      overflow: visible;
+      gap: var(--space-2);
+    }
+    html.is-presenting .addon-card {
+      height: 100%;
+      overflow: hidden;
+    }
+    .addon-card h3 {
+      font-size: clamp(14px, max(1.2cqw, 1.38vw), 20px);
+      line-height: var(--lh-title);
+      margin: 0;
+    }
+    .addon-card .body-copy {
+      font-size: clamp(11px, max(0.9cqw, 1.035vw), 14px);
+      line-height: var(--lh-body);
+      margin: 0;
+    }
+    .addon-card .addon-meta {
+      flex: 1;
+      min-height: 0;
+      align-content: start;
+    }
+    .addon-card .addon-price {
+      flex-shrink: 0;
+      margin-top: auto;
+      padding-top: 0.55em;
+      border-top: 1px solid var(--line);
+    }
+    .limit-card p {
+      font-size: clamp(12px, max(1cqw, 1.15vw), 15px);
+      line-height: var(--lh-body);
+      margin: 0;
+    }
+    .slide[data-title="Standard"] .table td {
+      padding: 0.65em 0;
+      font-size: clamp(11px, max(0.95cqw, 1.092vw), 14px);
+      line-height: var(--lh-tight);
+      vertical-align: top;
+    }
+    .slide[data-title="Standard"] .card {
+      overflow: visible;
+      min-height: 0;
+      height: auto;
+    }
+    html.is-presenting .slide[data-title="Standard"] .card {
+      overflow: auto;
+      height: 100%;
+    }
+    .slide[data-title="Limitations"] .grid-2 {
+      align-content: stretch;
+    }
+    .slide[data-title="Limitations"] .limit-icon {
+      width: clamp(34px, max(3cqw, 3.45vw), 44px);
+      height: clamp(34px, max(3cqw, 3.45vw), 44px);
+    }
+    .slide[data-title="Pop-ups"] .situation-banner {
+      margin-bottom: 0.6%;
+      padding: clamp(8px, 1.2vw, 12px) clamp(10px, max(1cqw, 1.15vw), 14px);
+    }
+    .slide[data-title="Pop-ups"] .situation-banner .sit-icon {
+      width: clamp(56px, max(5.5cqw, 6.325vw), 76px);
+      height: clamp(56px, max(5.5cqw, 6.325vw), 76px);
+    }
+    .slide[data-title="Pop-ups"] .sit-contrast {
+      display: none;
+    }
+
+    .situation-split {
+      display: grid;
+      grid-template-columns: 1.45fr 0.7fr;
+      gap: var(--card-gap);
+      flex: 0 0 auto;
+      min-height: 0;
+      margin-top: var(--space-2);
+      align-items: stretch;
+    }
+    html.is-presenting .situation-split { flex: 1; }
+    .situation-copy {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: auto auto;
+      gap: var(--card-gap);
+      min-height: 0;
+      height: 100%;
+      align-content: start;
+    }
+    .situation-copy .card {
+      padding: clamp(14px, 1.4cqw + 0.5vw, 20px);
+      min-height: 0;
+      gap: var(--space-2);
+    }
+    .situation-copy .card.span-2 {
+      grid-column: 1 / -1;
+    }
+    .situation-copy .card p,
+    .situation-copy .list-clean li {
+      font-size: clamp(12px, max(0.98cqw, 1.127vw), 14.5px);
+      line-height: var(--lh-body);
+    }
+    .situation-copy .list-clean {
+      gap: 0.55em;
+    }
+    .situation-copy .card h3 {
+      font-size: clamp(15px, max(1.25cqw, 1.438vw), 20px);
+      margin: 0;
+      line-height: var(--lh-title);
+    }
+    .slide[data-title="Pop-ups"] .situation-split .split-visual {
+      max-height: 100%;
+    }
+    .slide[data-title="Pop-ups"] h2,
+    .slide[data-title="Regular stores"] h2 {
+      max-width: 26ch;
+      font-size: clamp(20px, max(2.2cqw, 2.53vw), 34px);
+    }
+
+    .situation-banner {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: clamp(14px, max(1.6cqw, 1.84vw), 22px);
+      align-items: center;
+      margin: 0 0 var(--space-3);
+      padding: clamp(12px, 1.2cqw + 0.4vw, 18px) clamp(14px, 1.3cqw + 0.4vw, 20px);
+      border-radius: var(--card-radius);
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.72);
+    }
+    .situation-banner.store {
+      border-color: #e6dbe3;
+      background: linear-gradient(100deg, #ffffff 0%, #faf5f8 100%);
+    }
+    .situation-banner.popup {
+      border-color: rgba(255, 29, 191, 0.35);
+      background: linear-gradient(100deg, #fff 0%, #fce4f4 100%);
+      box-shadow: 0 0 0 4px rgba(255, 29, 191, 0.06);
+    }
+    .situation-banner .sit-icon {
+      width: clamp(72px, max(7cqw, 8.05vw), 96px);
+      height: clamp(72px, max(7cqw, 8.05vw), 96px);
+      border-radius: 18px;
+      overflow: hidden;
+      flex: 0 0 auto;
+      background: #fff;
+      border: 1px solid var(--line);
+    }
+    .situation-banner .sit-icon img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .situation-banner .sit-copy {
+      min-width: 0;
+    }
+    .situation-banner .sit-pair {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .situation-banner .sit-pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.35em 0.7em;
+      border-radius: 999px;
+      font-size: clamp(10px, max(0.85cqw, 0.977vw), 12px);
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      line-height: 1;
+    }
+    .situation-banner.store .sit-pill.main {
+      background: #1c1c1e;
+      color: #fff;
+    }
+    .situation-banner.popup .sit-pill.main {
+      background: var(--blend);
+      color: #fff;
+    }
+    .situation-banner .sit-pill.sub {
+      background: #fff;
+      color: var(--mute);
+      border: 1px solid var(--line);
+    }
+    .situation-banner .sit-contrast {
+      margin: 0;
+      color: var(--mute);
+      font-size: clamp(13px, max(1.1cqw, 1.265vw), 16px);
+      font-weight: 600;
+      line-height: var(--lh-tight);
+      max-width: 46ch;
+    }
+    .situation-banner .sit-contrast strong {
+      color: var(--ink);
+      font-weight: 800;
+    }
+
+    .card {
+      background: var(--white);
+      border: 1px solid var(--line);
+      border-radius: var(--card-radius);
+      padding: var(--card-pad);
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+    }
+    .card > :last-child { margin-bottom: 0; }
+    .card .table { width: 100%; margin-top: 2px; }
+    .card.soft { background: rgba(255,255,255,0.72); }
+    .card .label {
+      color: var(--magenta);
+      font-size: clamp(10px, max(0.85cqw, 0.977vw), 12px);
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      line-height: var(--lh-tight);
+      margin-bottom: 0;
+    }
+    .card .kind-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-2);
+      margin-bottom: 0;
+    }
+    .card .kind-row .label { margin-bottom: 0; }
+    .card h3 { margin-bottom: 0; }
+    .kind-pill {
+      flex-shrink: 0;
+      font-size: clamp(9px, max(0.72cqw, 0.828vw), 11px);
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 0.35em 0.7em;
+      border-radius: 6px;
+    }
+    .card.kind-product {
+      border-color: rgba(255,29,191,0.28);
+      border-top: 3px solid var(--magenta);
+      background: var(--white);
+    }
+    .card.kind-product .kind-pill {
+      color: var(--magenta);
+      background: var(--rose-mist);
+    }
+    .card.kind-service {
+      border-color: rgba(173,12,121,0.18);
+      border-top: 3px solid var(--rose-deep);
+      background: linear-gradient(180deg, #fff7fb 0%, #fce4f4 100%);
+    }
+    .card.kind-service .label { color: var(--rose-deep); }
+    .card.kind-service .kind-pill {
+      color: #fff;
+      background: var(--rose-deep);
+    }
+    .card.kind-service .table td { border-bottom-color: rgba(173,12,121,0.12); }
+    .card p, .body-copy {
+      color: var(--mute);
+      font-size: clamp(12px, max(1.05cqw, 1.208vw), 16px);
+      line-height: var(--lh-body);
+      font-weight: 500;
+    }
+
+    .stat {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35em;
+    }
+    .stat .value {
+      font-size: clamp(28px, max(3.2cqw, 3.68vw), 48px);
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      line-height: 1;
+      background: var(--blend);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .stat .note {
+      color: var(--mute);
+      font-size: clamp(11px, max(0.95cqw, 1.092vw), 14px);
+      font-weight: 500;
+      line-height: 1.35;
+    }
+
+    /* Journey map */
+    .journey {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: var(--card-gap);
+      margin-top: var(--space-4);
+      position: relative;
+    }
+    .journey::before {
+      content: "";
+      position: absolute;
+      top: clamp(26px, max(2.6cqw, 2.99vw), 34px);
+      left: 8%;
+      right: 8%;
+      height: 2px;
+      background: linear-gradient(90deg, var(--line), var(--magenta), var(--line));
+      z-index: 0;
+    }
+    .j-step {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 0 2%;
+    }
+    .j-icon {
+      width: clamp(48px, max(4.6cqw, 5.29vw), 64px);
+      height: clamp(48px, max(4.6cqw, 5.29vw), 64px);
+      margin: 0 auto 12px;
+      border-radius: 50%;
+      background: #fff;
+      border: 1.5px solid var(--line);
+      box-shadow: 0 4px 14px rgba(28, 28, 30, 0.06);
+      display: grid;
+      place-items: center;
+      position: relative;
+      z-index: 1;
+    }
+    .j-icon svg {
+      width: 52%;
+      height: 52%;
+      display: block;
+    }
+    .j-step.pain .j-icon {
+      border-color: rgba(255, 29, 191, 0.45);
+      background: var(--rose-mist);
+      box-shadow: 0 0 0 6px rgba(255, 29, 191, 0.08), 0 6px 16px rgba(255, 29, 191, 0.12);
+      color: var(--rose-deep);
+    }
+    .j-step.fix .j-icon {
+      border-color: rgba(255, 122, 0, 0.45);
+      background: rgba(255, 122, 0, 0.12);
+      box-shadow: 0 0 0 6px rgba(255, 122, 0, 0.1), 0 6px 16px rgba(255, 122, 0, 0.12);
+      color: #b35600;
+    }
+    .j-step:not(.pain):not(.fix) .j-icon {
+      color: var(--ink-soft);
+    }
+    .j-step h4 {
+      font-size: clamp(12px, max(1.05cqw, 1.208vw), 15px);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: var(--lh-title);
+      margin-bottom: 0.35em;
+    }
+    .j-step p {
+      color: var(--mute-2);
+      font-size: clamp(10px, max(0.88cqw, 1.012vw), 13px);
+      line-height: var(--lh-tight);
+      font-weight: 500;
+    }
+    .pain-tag {
+      display: inline-block;
+      margin-top: 0.55em;
+      padding: 0.25em 0.65em;
+      border-radius: 999px;
+      background: var(--rose-mist);
+      color: var(--rose-deep);
+      font-size: clamp(9px, max(0.78cqw, 0.897vw), 11px);
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .fix-tag {
+      display: inline-block;
+      margin-top: 0.55em;
+      padding: 0.25em 0.65em;
+      border-radius: 999px;
+      background: rgba(255,122,0,0.12);
+      color: #b35600;
+      font-size: clamp(9px, max(0.78cqw, 0.897vw), 11px);
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    /* Bars / charts */
+    .chart-wrap { display: flex; flex-direction: column; gap: 3.5%; height: 100%; justify-content: center; }
+    .bar-row {
+      display: grid;
+      grid-template-columns: 28% 1fr 14%;
+      align-items: center;
+      gap: 2%;
+    }
+    .bar-row .name {
+      font-size: clamp(11px, max(0.95cqw, 1.092vw), 14px);
+      font-weight: 600;
+      color: var(--mute);
+      text-align: right;
+    }
+    .bar-track {
+      height: clamp(14px, max(1.4cqw, 1.61vw), 22px);
+      background: var(--rose-mist);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    .bar-fill {
+      height: 100%;
+      border-radius: 999px;
+      background: var(--blend);
+      width: 0;
+      transition: width 0.9s cubic-bezier(.2,.8,.2,1);
+    }
+    .slide.active .bar-fill { width: var(--w); }
+    .bar-row .val {
+      font-size: clamp(12px, max(1.05cqw, 1.208vw), 16px);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .price-section-label {
+      color: var(--mute-2);
+      font-size: clamp(10px, max(0.85cqw, 0.977vw), 12px);
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      line-height: var(--lh-tight);
+      margin-top: var(--space-4);
+      margin-bottom: var(--space-2);
+    }
+    .fee-card {
+      gap: var(--space-1);
+      padding: clamp(14px, 1.3cqw + 0.4vw, 22px) !important;
+    }
+    .fee-card .fee-note {
+      color: var(--mute-2);
+      font-size: clamp(10px, max(0.85cqw, 0.977vw), 12px);
+      font-weight: 500;
+      line-height: var(--lh-tight);
+      margin-top: 0;
+    }
+    .addon-meta {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-2);
+      margin-top: var(--space-1);
+    }
+    .addon-chip {
+      border-radius: 12px;
+      padding: var(--space-2) clamp(10px, 1cqw, 14px);
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .addon-chip .chip-label {
+      font-size: clamp(9px, max(0.72cqw, 0.828vw), 11px);
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      line-height: var(--lh-tight);
+      margin-bottom: 0;
+    }
+    .addon-chip p {
+      color: var(--mute);
+      font-size: clamp(11px, max(0.92cqw, 1.058vw), 13px);
+      line-height: var(--lh-tight);
+      font-weight: 500;
+      margin: 0;
+    }
+    .addon-chip.best-for {
+      background: var(--rose-mist);
+      border: 1px solid rgba(255,29,191,0.18);
+    }
+    .addon-chip.best-for .chip-label { color: var(--magenta); }
+    .addon-chip.benefit {
+      background: #fff7fb;
+      border: 1px solid rgba(173,12,121,0.16);
+    }
+    .addon-chip.benefit .chip-label { color: var(--rose-deep); }
+    .limit-card {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5em;
+      min-height: 0;
+      height: auto;
+      overflow: visible;
+    }
+    html.is-presenting .limit-card {
+      height: 100%;
+      overflow: hidden;
+    }
+    .limit-icon {
+      width: clamp(40px, max(3.6cqw, 4.14vw), 52px);
+      height: clamp(40px, max(3.6cqw, 4.14vw), 52px);
+      border-radius: 14px;
+      background: var(--rose-mist);
+      border: 1px solid rgba(255,29,191,0.22);
+      color: var(--rose-deep);
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+    }
+    .limit-icon svg {
+      width: 54%;
+      height: 54%;
+      display: block;
+    }
+    /* Horizontal rate chart (lying bar chart) */
+    .rate-chart {
+      display: flex;
+      flex-direction: column;
+      gap: clamp(8px, 1cqh + 0.4vw, 12px);
+      margin-top: var(--space-2);
+      width: 100%;
+    }
+    .rate-row {
+      display: grid;
+      grid-template-columns: minmax(96px, 18%) minmax(0, 1fr) minmax(64px, 12%);
+      align-items: center;
+      gap: clamp(10px, 1.2cqw, 18px);
+    }
+    .rate-row .rate-label {
+      font-size: clamp(11px, max(0.95cqw, 1.092vw), 14px);
+      font-weight: 700;
+      color: var(--mute);
+      line-height: var(--lh-tight);
+      text-align: right;
+    }
+    .rate-row .rate-track {
+      position: relative;
+      height: clamp(28px, 2.6cqw + 0.6vw, 40px);
+      background: rgba(28, 28, 30, 0.06);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    .rate-row .rate-fill {
+      height: 100%;
+      width: 0;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #ff8ad8 0%, #ff5ec8 55%, #ff1dbf 100%);
+      opacity: 0.72;
+      transition: width 0.85s cubic-bezier(.2,.8,.2,1), opacity 0.25s ease;
+      min-width: 8px;
+    }
+    .slide.active .rate-row .rate-fill { width: var(--w); }
+    html:not(.is-presenting) .rate-row .rate-fill { width: var(--w); }
+    .rate-row.best .rate-fill {
+      opacity: 1;
+      background: var(--blend);
+      box-shadow: 0 4px 16px rgba(255, 29, 191, 0.28);
+    }
+    .rate-row.best .rate-label { color: var(--magenta); }
+    .rate-row .rate-val {
+      font-size: clamp(13px, max(1.1cqw, 1.265vw), 17px);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: var(--ink);
+      font-variant-numeric: tabular-nums;
+      text-align: left;
+    }
+    .rate-row.best .rate-val { color: var(--magenta); }
+    .rate-row .rate-val .unit {
+      display: block;
+      font-size: 0.65em;
+      font-weight: 600;
+      color: var(--mute-2);
+      letter-spacing: 0.04em;
+      margin-top: 1px;
+    }
+    .rate-row.best .rate-val .unit { color: var(--rose-deep); }
+
+    .mock-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.4%;
+      margin-top: 1%;
+      flex: 1;
+      min-height: 0;
+    }
+    .mock-card {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .mock-card img {
+      width: 100%;
+      height: 78%;
+      object-fit: cover;
+      object-position: top center;
+      background: #eee;
+    }
+    .mock-card .cap {
+      padding: 3.5% 5%;
+      font-size: clamp(11px, max(0.95cqw, 1.092vw), 14px);
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+    .mock-card .cap small {
+      display: block;
+      margin-top: 0.25em;
+      color: var(--mute-2);
+      font-weight: 500;
+      font-size: 0.85em;
+    }
+
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: clamp(11px, max(1cqw, 1.15vw), 15px);
+    }
+    .table th, .table td {
+      text-align: left;
+      padding: 0.72em 0.4em;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+      line-height: var(--lh-tight);
+    }
+    .table th {
+      color: var(--mute-2);
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-size: 0.78em;
+    }
+    .table td { color: var(--mute); font-weight: 500; }
+    .table td:first-child { color: var(--ink); font-weight: 700; }
+    .badge {
+      display: inline-block;
+      padding: 0.2em 0.55em;
+      border-radius: 999px;
+      background: var(--rose-mist);
+      color: var(--rose-deep);
+      font-size: 0.78em;
+      font-weight: 700;
+    }
+    .badge.opt {
+      background: rgba(255,122,0,0.12);
+      color: #b35600;
+    }
+
+    .split-visual {
+      border-radius: 18px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      background: #fff;
+      height: 100%;
+      min-height: 0;
+    }
+    .split-visual img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .slide-pov {
+      --pov-pad-x: clamp(14px, max(1.2cqw, 1.38vw), 20px);
+      --pov-pad-y: clamp(12px, max(1.1cqw, 1.265vw), 18px);
+      --pov-gap: clamp(18px, max(2cqw, 2.3vw), 28px);
+    }
+    .slide-pov > .kicker { margin-bottom: 0.55%; }
+    .slide-pov > h2 {
+      max-width: 24ch;
+      font-size: clamp(24px, max(2.7cqw, 3.105vw), 40px);
+      margin-bottom: 0;
+    }
+    .pov-board {
+      position: relative;
+      flex: 0 0 auto;
+      min-height: 0;
+      margin-top: clamp(14px, 2vw, 22px);
+      display: flex;
+      flex-direction: column;
+      container-type: inline-size;
+    }
+    html.is-presenting .pov-board { flex: 1; }
+    .pov-cards {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: var(--pov-gap);
+      flex: 1;
+      min-height: 0;
+      align-items: stretch;
+      position: relative;
+      z-index: 1;
+    }
+    .pov-card {
+      position: relative;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      overflow: visible;
+      display: grid;
+      grid-template-rows: minmax(120px, 1fr) auto;
+      min-height: 0;
+      height: 100%;
+    }
+    .pov-card.pain {
+      background: linear-gradient(180deg, #ffffff 0%, #faf5f8 100%);
+      border-color: #e6dbe3;
+    }
+    .pov-card.fix {
+      background: #fff;
+      border: 1.5px solid rgba(255, 29, 191, 0.55);
+      box-shadow:
+        0 0 0 4px rgba(255, 29, 191, 0.08),
+        0 0 22px rgba(255, 29, 191, 0.28),
+        0 0 48px rgba(255, 109, 212, 0.18),
+        0 10px 28px rgba(173, 12, 121, 0.08);
+      z-index: 2;
+    }
+    .pov-card.fix::before {
+      content: "";
+      position: absolute;
+      inset: -8%;
+      border-radius: 28px;
+      background: radial-gradient(closest-side at 50% 40%, rgba(255, 29, 191, 0.16), transparent 72%);
+      filter: blur(16px);
+      pointer-events: none;
+      z-index: -1;
+    }
+    .card-tag {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 4;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35em;
+      max-width: calc(100% - 20px);
+      padding: 0.4em 0.7em 0.4em 0.45em;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.96);
+      font-size: clamp(8px, max(0.72cqw, 0.828vw), 10px);
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      line-height: 1;
+      white-space: nowrap;
+    }
+    .card-tag.leak {
+      color: var(--mute);
+      border: 1.5px solid rgba(58, 58, 60, 0.18);
+      box-shadow: 0 4px 12px rgba(28, 28, 30, 0.08);
+    }
+    .card-tag.fix {
+      color: var(--rose-deep);
+      border: 1.5px solid rgba(255, 29, 191, 0.55);
+      box-shadow:
+        0 0 0 3px rgba(255, 29, 191, 0.12),
+        0 6px 16px rgba(255, 29, 191, 0.28);
+    }
+    .card-tag .dot {
+      width: 0.55em;
+      height: 0.55em;
+      border-radius: 999px;
+      background: #8e8e93;
+      flex: 0 0 auto;
+    }
+    .card-tag .tick {
+      width: 1.15em;
+      height: 1.15em;
+      border-radius: 999px;
+      background: var(--blend);
+      color: #fff;
+      display: grid;
+      place-items: center;
+      flex: 0 0 auto;
+    }
+    .card-tag .tick svg {
+      width: 65%;
+      height: 65%;
+      display: block;
+    }
+    .pov-card .thumb {
+      position: relative;
+      min-height: 0;
+      overflow: hidden;
+      background: #eee;
+      border-radius: 17px 17px 0 0;
+    }
+    .pov-card .thumb > img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      display: block;
+    }
+    .pov-card .body {
+      display: grid;
+      grid-template-rows: auto minmax(2.4em, auto) minmax(2.6em, auto) auto;
+      padding: var(--pov-pad-y) var(--pov-pad-x) calc(var(--pov-pad-y) + 2px);
+      gap: var(--space-2);
+      background: inherit;
+      border-radius: 0 0 17px 17px;
+    }
+    .pov-card .label {
+      margin: 0;
+      padding: 0;
+      line-height: 1;
+    }
+    .pov-card h3 {
+      font-size: clamp(14px, max(1.25cqw, 1.438vw), 18px);
+      max-width: none;
+      margin: 0;
+      padding: 0;
+      line-height: var(--lh-title);
+      line-height: 1.22;
+      letter-spacing: -0.025em;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .pov-card .desc {
+      color: var(--mute);
+      font-size: clamp(11px, max(0.92cqw, 1.058vw), 13px);
+      line-height: var(--lh-tight);
+      font-weight: 500;
+      margin: 0;
+      padding: 0;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .pov-stat {
+      margin-top: 0.2em;
+      padding-top: 0.75em;
+      border-top: 1px solid var(--line);
+      display: grid;
+      grid-template-rows: auto auto;
+      gap: 0.3em;
+      align-content: start;
+    }
+    .pov-stat .n {
+      font-size: clamp(22px, max(2cqw, 2.3vw), 30px);
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      background: var(--blend);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      -webkit-text-fill-color: transparent;
+      line-height: 1;
+      white-space: nowrap;
+    }
+    .pov-stat .t {
+      color: var(--mute-2);
+      font-size: clamp(10px, max(0.8cqw, 0.92vw), 12px);
+      font-weight: 600;
+      line-height: 1.3;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .pov-op {
+      position: absolute;
+      top: 26%;
+      transform: translate(-50%, -50%);
+      z-index: 6;
+      pointer-events: none;
+      line-height: 1;
+      font-weight: 800;
+      letter-spacing: -0.06em;
+      user-select: none;
+      width: var(--pov-gap);
+      text-align: center;
+      text-shadow: 0 2px 14px rgba(247, 242, 246, 0.95);
+    }
+    .pov-plus {
+      left: calc((100% - 2 * var(--pov-gap)) / 3 + var(--pov-gap) / 2);
+      font-size: clamp(40px, max(4.6cqw, 5.29vw), 68px);
+      color: rgba(255, 29, 191, 0.34);
+    }
+    .pov-arrow {
+      left: calc((100% - 2 * var(--pov-gap)) / 3 * 2 + var(--pov-gap) * 1.5);
+      font-size: clamp(34px, max(3.8cqw, 4.37vw), 56px);
+      color: rgba(255, 29, 191, 0.55);
+      font-weight: 700;
+    }
+
+    .list-clean {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.65em;
+      margin: 0;
+      padding: 0;
+    }
+    .list-clean li {
+      display: grid;
+      grid-template-columns: 22px 1fr;
+      gap: 0.7em;
+      align-items: start;
+      color: var(--mute);
+      font-size: clamp(12px, max(1.05cqw, 1.208vw), 16px);
+      font-weight: 500;
+      line-height: var(--lh-body);
+    }
+    .list-clean li::before {
+      content: "";
+      width: 10px;
+      height: 10px;
+      margin-top: 0.45em;
+      border-radius: 50%;
+      background: var(--blend);
+    }
+
+    .two-moments {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--card-gap);
+      margin-top: var(--space-3);
+      flex: 1;
+      min-height: 0;
+    }
+    .moment {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: var(--card-radius);
+      padding: var(--card-pad);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+    .moment .num {
+      font-size: clamp(12px, max(1cqw, 1.15vw), 14px);
+      font-weight: 800;
+      letter-spacing: 0.14em;
+      color: var(--magenta);
+      line-height: var(--lh-tight);
+    }
+    .moment h3 {
+      font-size: clamp(18px, max(1.7cqw, 1.955vw), 26px);
+      max-width: 16ch;
+      line-height: var(--lh-title);
+      margin: 0;
+    }
+    .flow {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-1);
+      margin-top: auto;
+      padding-top: var(--space-2);
+    }
+    .chip {
+      padding: 0.4em 0.75em;
+      border-radius: 999px;
+      background: var(--rose-mist);
+      color: var(--ink-soft);
+      font-size: clamp(10px, max(0.85cqw, 0.977vw), 12px);
+      font-weight: 600;
+    }
+    .chip.arrow {
+      background: transparent;
+      color: var(--magenta);
+      padding: 0.4em 0.15em;
+    }
+
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: #cfcfd2;
+      font-size: 13px;
+      font-weight: 500;
+      user-select: none;
+    }
+    .controls button {
+      appearance: none;
+      border: 1px solid #3a3a3c;
+      background: #2c2c2e;
+      color: #fff;
+      width: 40px;
+      height: 40px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 700;
+    }
+    .controls button:hover { border-color: var(--magenta); }
+    .controls .progress {
+      min-width: 72px;
+      text-align: center;
+      font-variant-numeric: tabular-nums;
+    }
+    .hint { color: #8e8e93; font-size: 12px; }
+
+    /* Gaiin-style proposal chrome: section nav + Present mode */
+    .deck-chrome {
+      position: fixed;
+      top: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 30;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      max-width: calc(100vw - 24px);
+      pointer-events: none;
+    }
+    .deck-chrome > * { pointer-events: auto; }
+    .nav-pill {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      padding: 5px;
+      border-radius: 999px;
+      background: rgba(28,28,30,0.92);
+      border: 1px solid rgba(255,255,255,0.08);
+      backdrop-filter: blur(10px);
+      overflow-x: auto;
+      max-width: min(78vw, 920px);
+      scrollbar-width: none;
+    }
+    .nav-pill::-webkit-scrollbar { display: none; }
+    .nav-pill button {
+      appearance: none;
+      border: 0;
+      background: transparent;
+      color: rgba(255,255,255,0.72);
+      font-family: inherit;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      white-space: nowrap;
+      padding: 8px 10px;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: background 0.2s ease, color 0.2s ease;
+    }
+    .nav-pill button:hover { color: #fff; background: rgba(255,255,255,0.08); }
+    .nav-pill button[aria-current="true"] {
+      background: rgba(255,29,191,0.18);
+      color: #ff8ad8;
+    }
+    .present-toggle {
+      appearance: none;
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(28,28,30,0.92);
+      color: #fff;
+      font-family: inherit;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 11px 16px;
+      border-radius: 999px;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+    }
+    .present-toggle:hover,
+    .present-toggle[aria-pressed="true"] {
+      background: var(--magenta);
+      border-color: var(--magenta);
+      color: #fff;
+    }
+    .present-bar {
+      display: none;
+      position: fixed;
+      z-index: 35;
+      left: 50%;
+      bottom: 16px;
+      transform: translateX(-50%);
+      align-items: center;
+      gap: 14px;
+      max-width: calc(100% - 24px);
+      background: rgba(28,28,30,0.94);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 999px;
+      padding: 8px 10px 8px 16px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      backdrop-filter: blur(10px);
+    }
+    .present-bar .present-count { color: #ff8ad8; white-space: nowrap; }
+    .present-bar .present-title {
+      color: rgba(255,255,255,0.88);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 28vw;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: none;
+    }
+    .present-dots { display: flex; gap: 3px; }
+    .present-dots button {
+      appearance: none;
+      width: 28px;
+      height: 28px;
+      border: 0;
+      border-radius: 999px;
+      background: transparent;
+      color: rgba(255,255,255,0.55);
+      font-family: inherit;
+      font-size: 10px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .present-dots button[aria-current="true"] {
+      background: var(--magenta);
+      color: #fff;
+    }
+    /* Present mode: one slide per viewport, like Gaiin */
+    html.is-presenting,
+    html.is-presenting body {
+      height: 100%;
+      overflow: hidden;
+    }
+    html.is-presenting .deck-shell {
+      padding: 0;
+      gap: 0;
+      height: 100dvh;
+      min-height: 100dvh;
+      overflow: hidden;
+      background: #111;
+    }
+    html.is-presenting .stage {
+      width: 100%;
+      height: 100dvh;
+      max-width: none;
+      max-height: none;
+      border-radius: 0;
+      box-shadow: none;
+      overflow: hidden;
+      container-type: size;
+    }
+    html.is-presenting .slides {
+      height: 100%;
+      display: block;
+      position: relative;
+    }
+    html.is-presenting .slide {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      min-height: 0;
+      opacity: 0;
+      pointer-events: none;
+      overflow: auto;
+      padding: clamp(72px, 8vh, 96px) clamp(18px, 4vw, 64px) clamp(72px, 9vh, 96px);
+      transition: opacity 0.28s ease;
+    }
+    html.is-presenting .slide.active {
+      opacity: 1;
+      pointer-events: auto;
+      z-index: 2;
+    }
+    html.is-presenting .slide-hero,
+    html.is-presenting .slide-close {
+      padding: 0;
+    }
+    html.is-presenting .slide-hero .hero-inner,
+    html.is-presenting .slide-close .hero-inner,
+    html.is-presenting .slide-close > div {
+      min-height: 100%;
+      height: 100%;
+    }
+    html.is-presenting .controls { display: none; }
+    html.is-presenting .present-bar { display: flex; }
+    html.is-presenting .deck-chrome { top: 12px; }
+
+    .menu-toggle {
+      display: none;
+      appearance: none;
+      width: 42px;
+      height: 42px;
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: 999px;
+      background: rgba(28,28,30,0.92);
+      color: #ff8ad8;
+      cursor: pointer;
+      flex-shrink: 0;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+    }
+    .menu-toggle__bars {
+      position: relative;
+      display: block;
+      width: 16px;
+      height: 2px;
+      border-radius: 2px;
+      background: currentColor;
+    }
+    .menu-toggle__bars::before,
+    .menu-toggle__bars::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      width: 16px;
+      height: 2px;
+      border-radius: 2px;
+      background: currentColor;
+    }
+    .menu-toggle__bars::before { transform: translateY(-6px); }
+    .menu-toggle__bars::after { transform: translateY(6px); }
+    .menu-toggle[aria-expanded="true"] .menu-toggle__bars { background: transparent; }
+    .menu-toggle[aria-expanded="true"] .menu-toggle__bars::before { transform: rotate(45deg); }
+    .menu-toggle[aria-expanded="true"] .menu-toggle__bars::after { transform: rotate(-45deg); }
+
+    .mobile-menu {
+      position: fixed;
+      top: 64px;
+      left: 12px;
+      right: 12px;
+      z-index: 40;
+      background: rgba(28,28,30,0.97);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 18px;
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      max-height: min(70dvh, 520px);
+      overflow: auto;
+      backdrop-filter: blur(12px);
+    }
+    .mobile-menu[hidden] { display: none; }
+    .mobile-menu button {
+      appearance: none;
+      border: 0;
+      background: transparent;
+      color: rgba(255,255,255,0.82);
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 600;
+      text-align: left;
+      padding: 12px 14px;
+      border-radius: 12px;
+      cursor: pointer;
+    }
+    .mobile-menu button:hover,
+    .mobile-menu button[aria-current="true"] {
+      background: rgba(255,29,191,0.16);
+      color: #ff8ad8;
+    }
+
+    .controls { display: none; }
+
+    @media (max-width: 1080px) {
+      .nav-pill { display: none; }
+      .menu-toggle { display: inline-flex; }
+    }
+    @media (min-width: 1081px) {
+      .mobile-menu { display: none !important; }
+    }
+
+    @media (max-width: 1100px) and (min-width: 901px) {
+      :root {
+        --card-pad: 18px;
+        --card-gap: 16px;
+        --section-gap: 20px;
+        --lh-display: 1.1;
+        --lh-body: 1.5;
+      }
+      .grid-4 { grid-template-columns: 1fr 1fr; }
+      .grid-5 { grid-template-columns: repeat(3, 1fr); }
+      .pov-cards { grid-template-columns: 1fr 1fr; }
+      .pov-op { display: none; }
+      .journey { gap: 14px; }
+    }
+
+    @media (max-width: 900px) {
+      :root {
+        --card-pad: 18px;
+        --card-gap: 14px;
+        --section-gap: 18px;
+        --space-5: 24px;
+        --lh-display: 1.12;
+        --lh-title: 1.22;
+        --lh-body: 1.55;
+        --lh-tight: 1.4;
+      }
+      .present-bar .present-title { display: none; }
+      .slide {
+        min-height: 0;
+        padding: 96px 18px 56px;
+      }
+      .slide-hero {
+        background:
+          linear-gradient(180deg, rgba(247,242,246,0.94) 0%, rgba(247,242,246,0.78) 42%, rgba(247,242,246,0.28) 100%),
+          url("assets/pitch-hero-mirror.jpg") center/cover no-repeat;
+      }
+      .slide-hero .hero-inner {
+        max-width: 100%;
+        width: 100%;
+        padding: 104px 20px 40px;
+        background: none;
+        gap: var(--space-5);
+      }
+      .cta-row {
+        margin-top: var(--space-4);
+        gap: var(--space-2);
+      }
+      .cta-row .pill {
+        max-width: 100%;
+        white-space: normal;
+        text-align: center;
+        line-height: var(--lh-tight);
+      }
+      .kicker { margin-bottom: 10px; }
+      h1 { font-size: clamp(32px, 9.5vw, 48px); letter-spacing: -0.04em; }
+      h2 {
+        font-size: clamp(24px, 7vw, 36px);
+        max-width: 20ch;
+        margin-bottom: var(--space-2);
+      }
+      .lede {
+        font-size: 15px;
+        line-height: var(--lh-body);
+        max-width: none;
+      }
+      .slide[data-title="Pop-ups"] h2,
+      .slide[data-title="Regular stores"] h2 {
+        font-size: clamp(22px, 6.5vw, 30px);
+        max-width: 22ch;
+      }
+      .topbar { margin-bottom: var(--space-4); }
+      .grid-2,
+      .grid-3,
+      .grid-4,
+      .grid-5,
+      .situation-split,
+      .situation-copy,
+      .pov-cards,
+      .two-moments,
+      .addon-meta {
+        grid-template-columns: 1fr !important;
+      }
+      .rate-chart { gap: 10px; }
+      .rate-row {
+        grid-template-columns: minmax(88px, 30%) minmax(0, 1fr) auto;
+        gap: 10px;
+      }
+      .rate-row .rate-label {
+        text-align: left;
+        font-size: 12px;
+      }
+      .rate-row .rate-track { height: 26px; }
+      .rate-row .rate-val {
+        font-size: 15px;
+        min-width: 4.5ch;
+      }
+      .rate-row .rate-val .unit { display: none; }
+      .pov-card {
+        height: auto;
+        grid-template-rows: 168px auto;
+        border-radius: var(--card-radius);
+      }
+      .pov-card .body {
+        gap: 10px;
+        padding: 14px 16px 16px;
+      }
+      .pov-card.fix::before { display: none; }
+      .addon-meta { grid-template-columns: 1fr !important; }
+      .journey {
+        grid-template-columns: 1fr;
+        gap: 0;
+        margin-top: var(--space-4);
+      }
+      .journey::before {
+        top: 24px;
+        bottom: 24px;
+        left: 23px;
+        right: auto;
+        width: 2px;
+        height: auto;
+        background: linear-gradient(180deg, var(--line), var(--magenta), var(--line));
+      }
+      .j-step {
+        display: grid;
+        grid-template-columns: 48px minmax(0, 1fr);
+        column-gap: 14px;
+        text-align: left;
+        padding: 0 0 22px;
+        align-items: start;
+      }
+      .j-step:last-child { padding-bottom: 0; }
+      .j-icon {
+        margin: 0;
+        grid-row: 1 / span 4;
+      }
+      .j-step h4 { margin-top: 4px; }
+      .j-step p { max-width: 36ch; }
+      .split-visual {
+        min-height: 200px;
+        max-height: 240px;
+        border-radius: var(--card-radius);
+        margin-top: 4px;
+      }
+      .situation-banner {
+        grid-template-columns: 1fr;
+        gap: var(--space-3);
+        margin-bottom: var(--space-4);
+      }
+      .situation-banner .sit-icon {
+        width: 56px;
+        height: 56px;
+        border-radius: 14px;
+      }
+      .bar-row {
+        grid-template-columns: 1fr;
+        gap: 6px;
+      }
+      .bar-row .name { text-align: left; }
+      .slide > .grid-2,
+      .slide > .grid-3,
+      .slide > .situation-split,
+      .slide > .rate-chart {
+        overflow: visible;
+        height: auto !important;
+        flex: none !important;
+        margin-top: var(--space-4) !important;
+      }
+      .grid-2, .grid-3, .grid-4, .grid-5, .two-moments {
+        height: auto !important;
+        gap: var(--card-gap) !important;
+      }
+      .addon-card,
+      .card,
+      .moment,
+      .limit-card {
+        height: auto !important;
+        overflow: visible;
+        padding: var(--card-pad);
+        gap: var(--space-2);
+      }
+      .card .label { letter-spacing: 0.12em; }
+      .list-clean { gap: 0.7em; }
+      .list-clean li {
+        font-size: 14px;
+        line-height: var(--lh-body);
+      }
+      .table th, .table td {
+        padding: 0.7em 0;
+        line-height: var(--lh-tight);
+      }
+      .footer-bar {
+        margin-top: var(--space-5);
+        padding-top: var(--space-3);
+        gap: var(--space-2);
+        flex-wrap: wrap;
+      }
+      .price-section-label {
+        margin-top: var(--space-5);
+        margin-bottom: var(--space-3);
+      }
+      .fee-card { padding: 16px !important; }
+      .addon-chip { padding: 12px; gap: 6px; }
+      .moment h3 { max-width: none; }
+      .flow {
+        gap: 8px;
+        padding-top: var(--space-3);
+      }
+      .chip {
+        font-size: 12px;
+        padding: 0.45em 0.8em;
+        line-height: 1.3;
+      }
+      .body-copy, .card p {
+        font-size: 14.5px;
+        line-height: 1.58;
+      }
+    }
+
+    @media (max-width: 640px) {
+      :root {
+        --card-pad: 16px;
+        --card-gap: 12px;
+        --lh-body: 1.6;
+      }
+      .deck-chrome { top: 10px; gap: 8px; }
+      .present-toggle { padding: 10px 12px; font-size: 10px; }
+      .present-dots button { width: 24px; height: 24px; }
+      .slide { padding: 92px 16px 52px; }
+      .slide-hero .hero-inner { padding: 100px 16px 36px; }
+      .cta-row { gap: 8px; }
+      .pill { font-size: 12px; padding: 0.55em 1em; }
+      .rate-row {
+        grid-template-columns: minmax(72px, 28%) minmax(0, 1fr) auto;
+        gap: 8px;
+      }
+      .rate-row .rate-track { height: 22px; }
+      .rate-row .rate-val { font-size: 14px; }
+      h1 { font-size: clamp(30px, 9vw, 42px); }
+      .lede { font-size: 14.5px; line-height: 1.6; }
+      .situation-banner .sit-pair { gap: 8px; margin-bottom: 10px; }
+    }
+
+    @media (max-height: 820px) {
+      html.is-presenting h2 {
+        font-size: clamp(22px, 4vw, 36px);
+      }
+      html.is-presenting .slide {
+        padding-top: 64px;
+        padding-bottom: 72px;
+      }
+    }
+
+    @page {
+      size: 1920px 1080px;
+      margin: 0;
+    }
+    @media print {
+      html, body,
+      html.is-presenting,
+      html.is-presenting body {
+        background: #fff;
+        width: var(--slide-w);
+        height: auto !important;
+        overflow: visible !important;
+        margin: 0;
+        padding: 0;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      .deck-shell,
+      html.is-presenting .deck-shell {
+        padding: 0;
+        gap: 0;
+        display: block;
+        min-height: 0;
+        height: auto !important;
+        overflow: visible !important;
+      }
+      .controls,
+      .deck-chrome,
+      .present-bar,
+      .mobile-menu,
+      .menu-toggle { display: none !important; }
+      .stage,
+      html.is-presenting .stage {
+        width: var(--slide-w);
+        height: auto !important;
+        aspect-ratio: auto;
+        border-radius: 0;
+        box-shadow: none;
+        overflow: visible;
+        container-type: normal;
+      }
+      .slides,
+      html.is-presenting .slides {
+        height: auto;
+        position: static;
+        display: block;
+      }
+      .slide,
+      html.is-presenting .slide {
+        position: relative !important;
+        inset: auto !important;
+        width: var(--slide-w);
+        height: var(--slide-h) !important;
+        min-height: 0 !important;
+        opacity: 1 !important;
+        pointer-events: auto;
+        transform: none !important;
+        overflow: hidden !important;
+        padding: 4.2% 5% !important;
+        page-break-after: always;
+        break-after: page;
+        page-break-inside: avoid;
+        break-inside: avoid;
+        container-type: size;
+        container-name: stage;
+      }
+      .slide-hero,
+      .slide-close,
+      html.is-presenting .slide-hero,
+      html.is-presenting .slide-close { padding: 0 !important; }
+      .rate-row .rate-fill { width: var(--w) !important; }
+      .slide:last-child {
+        page-break-after: auto;
+        break-after: auto;
+      }
+      .slide .bar-fill,
+      .slide .rate-fill { width: var(--w) !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="deck-shell">
+    <div class="stage" id="stage">
+      <div class="slides" id="slides">
+
+        <!-- 01 COVER -->
+        <section class="slide slide-hero active" data-title="Cover">
+          <div class="hero-inner">
+            <div>
+              <a class="brand-link" href="https://www.livvium.com" target="_blank" rel="noopener noreferrer" aria-label="LIVVIUM homepage">
+                <img class="wordmark" src="assets/livvium-wordmark-black.svg" alt="LIVVIUM" />
+              </a>
+            </div>
+            <div>
+              <p class="kicker">
+                <a class="text-link" href="https://www.livvium.com/solutions/in-store-experiences-activations" target="_blank" rel="noopener noreferrer" style="color:inherit;border-bottom-color:rgba(255,29,191,0.35);">In-Store Experiences</a>
+              </p>
+              <h1>Catch the sale<br />before it walks out.</h1>
+              <p class="lede" style="margin-top:1.2em;">An interactive mirror for stores, pop-ups and events — browse, preview on-body, and keep purchase intent alive when fitting rooms can’t.</p>
+              <div class="cta-row">
+                <a class="pill pill-solid" href="https://www.livvium.com/contact#form" target="_blank" rel="noopener noreferrer">Start a conversation</a>
+                <a class="pill pill-outline" href="https://www.livvium.com/solutions/in-store-experiences-activations" target="_blank" rel="noopener noreferrer">In-Store Experiences</a>
+                <p class="cta-note">Or browse <a href="https://www.livvium.com/solutions" target="_blank" rel="noopener noreferrer">all solutions</a> on livvium.com</p>
+              </div>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:flex-end;">
+              <p class="sig" style="color:var(--mute-2);font-size:clamp(11px,max(0.95cqw, 1.092vw),14px);font-weight:600;">People. Journeys. What’s next.</p>
+              <p style="color:var(--mute-2);font-size:clamp(11px,max(0.95cqw, 1.092vw),13px);font-weight:600;">01 / 12</p>
+            </div>
+          </div>
+        </section>
+
+
+        <!-- 02 JOURNEY MAP -->
+        <section class="slide" data-title="Journey">
+          <div class="topbar">
+            <img class="wordmark" src="assets/livvium-wordmark-black.svg" alt="LIVVIUM" />
+            <span class="meta">Customer journey</span>
+          </div>
+          <p class="kicker">Where purchase intent falls on the floor</p>
+          <h2>The journey doesn’t fail for lack of interest.</h2>
+          <p class="lede">It fails at friction. The mirror doesn’t create demand — it catches demand that would otherwise leave.</p>
+
+          <div class="journey" style="margin-top:3%;">
+            <div class="j-step">
+              <div class="j-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M4 20V8.5L12 4l8 4.5V20"/>
+                  <path d="M9 20v-6h6v6"/>
+                  <path d="M12 10.5v.01"/>
+                </svg>
+              </div>
+              <h4>Enter</h4>
+              <p>Walk-in or passerby curiosity</p>
+            </div>
+            <div class="j-step">
+              <div class="j-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M8 5.5h8l1.2 14H6.8L8 5.5z"/>
+                  <path d="M10 5.5V4.8a2 2 0 0 1 4 0v.7"/>
+                  <path d="M9.5 11.5h5"/>
+                  <path d="M9 15h6"/>
+                </svg>
+              </div>
+              <h4>Browse</h4>
+              <p>Sees something that looks right</p>
+            </div>
+            <div class="j-step pain">
+              <div class="j-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="8.2"/>
+                  <path d="M12 7.5v5.2"/>
+                  <path d="M12 16.2h.01"/>
+                </svg>
+              </div>
+              <h4>Hesitate</h4>
+              <p>Won’t undress / queue / wait</p>
+              <span class="pain-tag">Pain · fitting cost</span>
+            </div>
+            <div class="j-step pain">
+              <div class="j-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M7 8.5c0-2.4 1.8-4.3 5-4.3s5 1.9 5 4.3"/>
+                  <path d="M7 8.5v11"/>
+                  <path d="M17 8.5v11"/>
+                  <path d="M9.5 13h5" stroke-dasharray="2.2 2.2"/>
+                  <path d="M10.5 17.5 13.5 14.5 16 17.5"/>
+                </svg>
+              </div>
+              <h4>Stock gap</h4>
+              <p>Wrong size or colour missing</p>
+              <span class="pain-tag">Pain · intent dies</span>
+            </div>
+            <div class="j-step fix">
+              <div class="j-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="6.5" y="3.5" width="11" height="17" rx="2"/>
+                  <path d="M9.5 12.2 11.2 13.9 14.8 10"/>
+                  <path d="M9 18.5h6"/>
+                </svg>
+              </div>
+              <h4>Decide</h4>
+              <p>Preview → keep going → buy or lead</p>
+              <span class="fix-tag">Mirror catches it</span>
+            </div>
+          </div>
+
+          <div class="grid-3" style="margin-top:3%;">
+            <div class="card">
+              <div class="label">Pain</div>
+              <h3>“I don’t want the fitting-room cost.”</h3>
+              <p>Jacket off, queue, awkward change — easier to put it down and leave.</p>
+            </div>
+            <div class="card">
+              <div class="label">Pain</div>
+              <h3>“Sorry, we don’t have your size.”</h3>
+              <p>Intent dies in one sentence. Walk-out before anyone can recover the sale.</p>
+            </div>
+            <div class="card" style="border-color: rgba(255,29,191,0.35);">
+              <div class="label">LIVVIUM response</div>
+              <h3>Preview first. Decide without leaving.</h3>
+              <p>See it on-body now. Confirm colour/size. Stay in the journey — even when stock can’t.</p>
+            </div>
+          </div>
+          <div class="footer-bar">
+            <span class="sig">Identify → Apply → Evolve</span>
+            <span class="num">02 / 12</span>
+          </div>
+        </section>
+        <!-- 03 REGULAR STORES -->
+        <section class="slide" data-title="Regular stores">
+          <div class="topbar">
+            <img class="wordmark" src="assets/livvium-wordmark-black.svg" alt="LIVVIUM" />
+            <span class="meta">Situation 01 of 02</span>
+          </div>
+          <div class="situation-banner store">
+            <div class="sit-icon">
+              <img src="assets/icon-situation-regular-store.jpg" alt="Regular store with fitting room" />
+            </div>
+            <div class="sit-copy">
+              <div class="sit-pair">
+                <span class="sit-pill main">Situation 01 · Regular stores</span>
+                <span class="sit-pill sub">Has fitting rooms</span>
+                <span class="sit-pill sub">Save lost sales</span>
+              </div>
+              <p class="sit-contrast"><strong>Difference:</strong> The store already has real try-on. The mirror is only for shoppers who are about to leave.</p>
+            </div>
+          </div>
+          <h2>In a normal store with fitting rooms, the mirror is not for every shopper. It is for the shoppers who are about to leave.</h2>
+          <div class="two-moments" style="margin-top:1.2%;">
+            <div class="moment">
+              <span class="num">BENEFIT 01 · SAVE THE “CAN’T BE BOTHERED” SALE</span>
+              <h3>Customer likes the item, but will not queue or undress.</h3>
+              <p class="body-copy">They put it back and walk out. With the mirror, they can stand in the aisle, see how it looks on them first, and decide whether it is worth entering the fitting room.</p>
+              <div class="flow">
+                <span class="chip">Sees the item</span>
+                <span class="chip arrow">→</span>
+                <span class="chip">Previews on the mirror</span>
+                <span class="chip arrow">→</span>
+                <span class="chip">Keeps shopping instead of leaving</span>
+              </div>
+            </div>
+            <div class="moment">
+              <span class="num">BENEFIT 02 · SAVE THE “OUT OF STOCK” SALE</span>
+              <h3>Customer likes it, but their size or colour is missing.</h3>
+              <p class="body-copy">Staff say “sorry, we don’t have it,” and the sale ends. With the mirror, the customer can still preview the missing option, confirm they want it, and leave a contact, wait for restock, or order if checkout is added.</p>
+              <div class="flow">
+                <span class="chip">Size / colour missing</span>
+                <span class="chip arrow">→</span>
+                <span class="chip">Confirms on the mirror</span>
+                <span class="chip arrow">→</span>
+                <span class="chip">Becomes a lead or order</span>
+              </div>
+            </div>
+          </div>
+          <div class="footer-bar">
+            <span class="sig">Regular stores · occasional sale-saving, not all-day essential</span>
+            <span class="num">03 / 12</span>
+          </div>
+        </section>
+
+        <!-- 04 POP-UPS / EVENTS -->
+        <section class="slide" data-title="Pop-ups">
+          <div class="topbar">
+            <img class="wordmark" src="assets/livvium-wordmark-black.svg" alt="LIVVIUM" />
+            <span class="meta">Situation 02 of 02</span>
+          </div>
+          <div class="situation-banner popup">
+            <div class="sit-icon">
+              <img src="assets/icon-situation-popup-event.jpg" alt="Pop-up event with interactive mirror" />
+            </div>
+            <div class="sit-copy">
+              <div class="sit-pair">
+                <span class="sit-pill main">Situation 02 · Pop-ups · Events · Ordering</span>
+                <span class="sit-pill sub">No fitting room</span>
+                <span class="sit-pill sub">Pull traffic in</span>
+              </div>
+            </div>
+          </div>
+          <h2>At pop-ups, events and ordering floors, there is often no fitting room. The mirror becomes the try-on.</h2>
+          <div class="situation-split">
+            <div class="situation-copy">
+              <div class="card span-2">
+                <div class="label">Why this situation is different</div>
+                <p>Customers still want to see clothes on themselves. In a temporary booth they usually cannot undress and try — so many people only look, then leave.</p>
+              </div>
+              <div class="card span-2">
+                <div class="label">What the mirror does here</div>
+                <ul class="list-clean">
+                  <li>Stops passersby and pulls them into the space.</li>
+                  <li>Lets them preview outfits without a fitting room.</li>
+                  <li>Turns curiosity into contact details via QR.</li>
+                </ul>
+              </div>
+              <div class="card">
+                <div class="label">Vs. a promoter</div>
+                <h3>HK$800–1,000 / day</h3>
+                <p>A promoter can invite people in. They rarely make passersby queue on their own. The mirror will.</p>
+              </div>
+              <div class="card">
+                <div class="label">What you’re paying for</div>
+                <h3>An automatic foot-traffic magnet</h3>
+                <p>A stop-and-interact moment at pop-ups and brand events, with QR capture — not a plain screen rental.</p>
+              </div>
+            </div>
+            <div class="split-visual">
+              <img src="assets/pitch-popup-magnet.jpg" alt="Pop-up mirror attracting foot traffic" />
+            </div>
+          </div>
+          <div class="footer-bar">
+            <span class="sig">Pop-ups · events · ordering · the strongest use case</span>
+            <span class="num">04 / 12</span>
+          </div>
+        </section>
+
+        <!-- 05 WHAT IT IS -->
+        <section class="slide" data-title="What it is">
+          <div class="topbar">
+            <a class="brand-link" href="https://www.livvium.com" target="_blank" rel="noopener noreferrer" aria-label="LIVVIUM homepage">
+              <img class="wordmark" src="assets/livvium-wordmark-black.svg" alt="LIVVIUM" />
+            </a>
+            <span class="meta">The offer</span>
+          </div>
+          <p class="kicker">What it is</p>
+          <h2>A mirror that fits retail — with the full deployment behind it.</h2>
+          <div class="grid-2" style="margin-top:1.5%; flex:1; min-height:0;">
+            <div style="display:flex;flex-direction:column;gap:3%;">
+              <p class="lede">It is a touchscreen mirror with a built-in computer. We design the interface, install it on site, set up the try-on, and keep the software running.</p>
+              <ul class="list-clean" style="margin-top:1%;">
+                <li>Customers can browse products on the touchscreen.</li>
+                <li>They can take a photo and preview an item on their body.</li>
+                <li>The mirror can show preset outfit suggestions.</li>
+                <li>Staff can use the same screen to look up basic product info.</li>
+              </ul>
+              <div class="card soft" style="margin-top:auto;">
+                <div class="label">What it is not</div>
+                <p>It does not replace staff. It is not a plug-and-play box you switch on and forget. We sell a deployment service, not just a screen rental.</p>
+              </div>
+              <p class="lede" style="margin-top:0.8em;max-width:none;">
+                Part of
+                <a class="text-link" href="https://www.livvium.com/solutions/in-store-experiences-activations" target="_blank" rel="noopener noreferrer">In-Store Experiences &amp; Activations</a>
+                — see
+                <a class="text-link" href="https://www.livvium.com/solutions" target="_blank" rel="noopener noreferrer">other solutions</a>
+                on livvium.com.
+              </p>
+            </div>
+            <div class="split-visual">
+              <img src="assets/mock-visualise.png" alt="Mirror try-on interface mockup" />
+            </div>
+          </div>
+          <div class="footer-bar">
+            <span class="sig">
+              <a class="text-link" href="https://www.livvium.com/solutions/in-store-experiences-activations" target="_blank" rel="noopener noreferrer" style="font-weight:600;">In-Store Experiences</a>
+            </span>
+            <span class="num">05 / 12</span>
+          </div>
+        </section>
+
+        <!-- 06 WHO IT HELPS -->
+        <section class="slide" data-title="Who it helps">
+          <div class="topbar">
+            <img class="wordmark" src="assets/livvium-wordmark-black.svg" alt="LIVVIUM" />
+            <span class="meta">Friction at the interaction layer</span>
+          </div>
+          <p class="kicker">What the core features solve</p>
+          <h2>Less repetition for staff. Less awkwardness for shoppers.</h2>
+          <div class="grid-3" style="margin-top:2%; flex:1;">
+            <div class="card">
+              <div class="label">For staff</div>
+              <h3>Back to selling</h3>
+              <p>Customers self-serve colour, size, look and outfit ideas. Staff stop being a human query machine.</p>
+              <ul class="list-clean" style="margin-top:1em;">
+                <li>“Another colour?” → browse on mirror</li>
+                <li>“What goes with this?” → preset looks</li>
+                <li>Queue at fitting room → preview first</li>
+              </ul>
+            </div>
+            <div class="card">
+              <div class="label">For customers</div>
+              <h3>Try without being watched</h3>
+              <p>Same logic as self-order kiosks: when nobody’s watching how many times you change your mind, you try more.</p>
+              <ul class="list-clean" style="margin-top:1em;">
+                <li>No undressing to get a first read</li>
+                <li>Filter five looks → take one to the room</li>
+                <li>Keep browsing when stock can’t</li>
+              </ul>
+            </div>
+            <div class="card">
+              <div class="label">For the store</div>
+              <h3>Interaction signals</h3>
+              <p>Not inventory ops — but useful leads when something is viewed a lot and rarely bought.</p>
+              <ul class="list-clean" style="margin-top:1em;">
+                <li>Most viewed / tried products</li>
+                <li>Peak interaction hours</li>
+                <li>Average dwell · top outfits</li>
+              </ul>
+            </div>
+          </div>
+          <div class="footer-bar">
+            <span class="sig">Support screen — not a replacement for people</span>
+            <span class="num">06 / 12</span>
+          </div>
+        </section>
+
+        <!-- 07 EXPERIENCE -->
+        <section class="slide" data-title="Experience">
+          <div class="topbar">
+            <img class="wordmark" src="assets/livvium-wordmark-black.svg" alt="LIVVIUM" />
+            <span class="meta">On-mirror journey</span>
+          </div>
+          <p class="kicker">How it feels</p>
+          <h2>Discover → Visualise → Decide → Continue.</h2>
+          <div class="mock-row">
+            <div class="mock-card">
+              <img src="assets/mock-discover.png" alt="Discover" />
+              <div class="cap">01 Discover<small>Browse looks on the floor screen</small></div>
+            </div>
+            <div class="mock-card">
+              <img src="assets/mock-visualise.png" alt="Visualise" />
+              <div class="cap">02 Visualise<small>On-body preview in seconds</small></div>
+            </div>
+            <div class="mock-card">
+              <img src="assets/mock-decide.png" alt="Decide" />
+              <div class="cap">03 Decide<small>Compare, shortlist, choose</small></div>
+            </div>
+            <div class="mock-card">
+              <img src="assets/mock-continue.png" alt="Continue" />
+              <div class="cap">04 Continue<small>QR to phone · contact · next step</small></div>
+            </div>
+          </div>
+          <div class="footer-bar">
+            <span class="sig">Physical touchpoint for a connected journey</span>
+            <span class="num">07 / 12</span>
+          </div>
+        </section>
+
+        <!-- 08 STANDARD PACKAGE -->
+        <section class="slide" data-title="Standard">
+          <div class="topbar">
+            <img class="wordmark" src="assets/livvium-wordmark-black.svg" alt="LIVVIUM" />
+            <span class="meta">Standard package</span>
+          </div>
+          <p class="kicker">Included in every rental</p>
+          <h2>First, the standard package. This is what every client gets.</h2>
+          <p class="lede" style="margin-top:0.4%;">Daily rate = product + setup work. Install, delivery and deposit are separate on the next page.</p>
+          <div class="grid-2" style="margin-top:1%; flex:1; min-height:0; gap:2%;">
+            <div class="card kind-product">
+              <div class="kind-row">
+                <div class="label">What the mirror does</div>
+                <span class="kind-pill">Product</span>
+              </div>
+              <table class="table">
+                <tbody>
+                  <tr><td>Touchscreen browsing</td><td>Browse your catalogue on the mirror</td></tr>
+                  <tr><td>On-body preview</td><td>Photo + product → see it on them</td></tr>
+                  <tr><td>Outfit suggestions</td><td>Preset looks for “what goes with this?”</td></tr>
+                  <tr><td>Staff lookup</td><td>Basic product info on the same screen</td></tr>
+                  <tr><td>QR continue page</td><td>Continue on phone or leave contacts</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="card kind-service">
+              <div class="kind-row">
+                <div class="label">What we set up for you</div>
+                <span class="kind-pill">Service</span>
+              </div>
+              <table class="table">
+                <tbody>
+                  <tr><td>Interface design</td><td>UI around your catalogue and brand</td></tr>
+                  <tr><td>Try-on setup</td><td>Connect images + configure preview</td></tr>
+                  <tr><td>On-site install</td><td>We install · labour / delivery billed separately</td></tr>
+                  <tr><td>Staff briefing</td><td>~1 hour: power on, help customers, basic data</td></tr>
+                  <tr><td>Monthly report</td><td>Interactions, top products, peak hours</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="footer-bar">
+            <span class="sig">Standard only · add-ons come later if you need them</span>
+            <span class="num">08 / 12</span>
+          </div>
+        </section>
+
+        <!-- 09 STANDARD PRICING -->
+        <section class="slide" data-title="Standard pricing">
+          <div class="topbar">
+            <img class="wordmark" src="assets/livvium-wordmark-black.svg" alt="LIVVIUM" />
+            <span class="meta">Standard pricing · HKD</span>
+          </div>
+          <p class="kicker">Standard package price</p>
+          <h2>Rent a few days first. Longer stays lower the daily rate.</h2>
+          <p class="lede">Bar length = daily rental only. Longer stays lower the rate. Install, deposit and delivery below are charged separately.</p>
+
+          <div class="price-section-label">Daily rate · HKD / day / mirror · includes standard package</div>
+          <div class="rate-chart" aria-label="Daily rate by rental length">
+            <div class="rate-row" style="--w:100%">
+              <div class="rate-label">1–6 days</div>
+              <div class="rate-track"><div class="rate-fill"></div></div>
+              <div class="rate-val">5,500<span class="unit">HKD / day</span></div>
+            </div>
+            <div class="rate-row" style="--w:90%">
+              <div class="rate-label">7–13 · ~10%</div>
+              <div class="rate-track"><div class="rate-fill"></div></div>
+              <div class="rate-val">4,950<span class="unit">HKD / day</span></div>
+            </div>
+            <div class="rate-row" style="--w:80%">
+              <div class="rate-label">14–29 · ~20%</div>
+              <div class="rate-track"><div class="rate-fill"></div></div>
+              <div class="rate-val">4,400<span class="unit">HKD / day</span></div>
+            </div>
+            <div class="rate-row" style="--w:70%">
+              <div class="rate-label">30–59 · ~30%</div>
+              <div class="rate-track"><div class="rate-fill"></div></div>
+              <div class="rate-val">3,850<span class="unit">HKD / day</span></div>
+            </div>
+            <div class="rate-row" style="--w:65%">
+              <div class="rate-label">60–89 · ~35%</div>
+              <div class="rate-track"><div class="rate-fill"></div></div>
+              <div class="rate-val">3,575<span class="unit">HKD / day</span></div>
+            </div>
+            <div class="rate-row best" style="--w:60%">
+              <div class="rate-label">90+ · ~40%</div>
+              <div class="rate-track"><div class="rate-fill"></div></div>
+              <div class="rate-val">3,300<span class="unit">best rate</span></div>
+            </div>
+          </div>
+
+          <div class="price-section-label" style="margin-top:1.2%;">Extra · not in the daily rate</div>
+          <div class="grid-4" style="margin-top:0.6%; height:auto;">
+            <div class="card fee-card" style="padding:3.5% 4%;">
+              <div class="label">Install · one-time</div>
+              <p style="color:var(--ink);font-weight:700;">HK$2,000–3,500</p>
+              <p class="fee-note">On-site labour · network &amp; power check</p>
+            </div>
+            <div class="card fee-card" style="padding:3.5% 4%;">
+              <div class="label">Deposit · refundable</div>
+              <p style="color:var(--ink);font-weight:700;">HK$5,000 / mirror</p>
+              <p class="fee-note">Returned when the rental ends</p>
+            </div>
+            <div class="card fee-card" style="padding:3.5% 4%;">
+              <div class="label">Delivery · per trip</div>
+              <p style="color:var(--ink);font-weight:700;">HK$500 / trip</p>
+              <p class="fee-note">Transport to / from site</p>
+            </div>
+            <div class="card fee-card" style="padding:3.5% 4%;">
+              <div class="label">Availability</div>
+              <p style="color:var(--ink);font-weight:700;">&lt;5 mirrors</p>
+              <p class="fee-note">Early clients: rate lock 6 mo.</p>
+            </div>
+          </div>
+          <div class="footer-bar">
+            <span class="sig">Daily rate ≠ install / deposit / delivery · add-ons also separate</span>
+            <span class="num">09 / 12</span>
+          </div>
+        </section>
+
+        <!-- 10 ADD-ONS -->
+        <section class="slide" data-title="Add-ons">
+          <div class="topbar">
+            <img class="wordmark" src="assets/livvium-wordmark-black.svg" alt="LIVVIUM" />
+            <span class="meta">Optional add-ons</span>
+          </div>
+          <p class="kicker">Add only if you need them</p>
+          <h2>After standard is clear, these add-ons deepen conversion.</h2>
+          <p class="lede" style="margin-top:0.4%;">They are optional. Not choosing them does not affect core browse and try-on.</p>
+          <div class="grid-3" style="margin-top:1%; flex:1; min-height:0; align-items:stretch;">
+            <div class="card addon-card">
+              <div class="label">Add-on 01 · Inventory</div>
+              <h3>Real-time stock on the mirror</h3>
+              <p class="body-copy">See whether size or colour is available before asking staff.</p>
+              <div class="addon-meta">
+                <div class="addon-chip best-for">
+                  <div class="chip-label">Best for</div>
+                  <p>Stores with frequent stockouts and an API-ready system.</p>
+                </div>
+                <div class="addon-chip benefit">
+                  <div class="chip-label">Benefit</div>
+                  <p>Stops “sorry, we don’t have it” ending the conversation.</p>
+                </div>
+              </div>
+              <div class="addon-price">
+                <span class="badge opt">From HK$8,000–15,000 · one-time</span>
+              </div>
+            </div>
+            <div class="card addon-card">
+              <div class="label">Add-on 02 · Kiosk checkout</div>
+              <h3>Buy at the mirror</h3>
+              <p class="body-copy">Complete the purchase on the mirror instead of walking away empty-handed.</p>
+              <div class="addon-meta">
+                <div class="addon-chip best-for">
+                  <div class="chip-label">Best for</div>
+                  <p>Pop-ups / out-of-stock catch. Needs inventory first.</p>
+                </div>
+                <div class="addon-chip benefit">
+                  <div class="chip-label">Benefit</div>
+                  <p>Turns a lost walk-out into a sale or confirmed order.</p>
+                </div>
+              </div>
+              <div class="addon-price">
+                <span class="badge opt">From HK$5,000–10,000 · one-time</span>
+              </div>
+            </div>
+            <div class="card addon-card">
+              <div class="label">Add-on 03 · Idle playback</div>
+              <h3>Brand film when idle</h3>
+              <p class="body-copy">When idle, plays runway, brand films or new-product teasers.</p>
+              <div class="addon-meta">
+                <div class="addon-chip best-for">
+                  <div class="chip-label">Best for</div>
+                  <p>Pop-ups, events, brand displays. You provide the films.</p>
+                </div>
+                <div class="addon-chip benefit">
+                  <div class="chip-label">Benefit</div>
+                  <p>One device works as try-on tool and brand screen.</p>
+                </div>
+              </div>
+              <div class="addon-price">
+                <span class="badge opt">From HK$3,000–5,000 · one-time</span>
+              </div>
+            </div>
+          </div>
+          <div class="footer-bar">
+            <span class="sig">Optional · API / assets assessed upfront · we will say if something cannot be done</span>
+            <span class="num">10 / 12</span>
+          </div>
+        </section>
+
+        <!-- 13 LIMITATIONS -->
+        <section class="slide" data-title="Limitations">
+          <div class="topbar">
+            <img class="wordmark" src="assets/livvium-wordmark-black.svg" alt="LIVVIUM" />
+            <span class="meta">Honest edges</span>
+          </div>
+          <p class="kicker">Risks &amp; limitations</p>
+          <h2>We’ll tell you when not to pitch it.</h2>
+          <div class="grid-2" style="margin-top:1.2%; flex:1; min-height:0;">
+            <div class="card limit-card">
+              <div class="limit-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="4" width="18" height="14" rx="2"/>
+                  <circle cx="9" cy="10" r="1.6"/>
+                  <path d="M3 15.5 8.5 11l3.2 3.2L15 11.5 21 16"/>
+                  <path d="M17.5 5.5 18.2 7l1.5.7-1.5.7-.7 1.5-.7-1.5L15.3 7.7l1.5-.7z"/>
+                </svg>
+              </div>
+              <div class="label">Preview, not fabric truth</div>
+              <p>On-body preview is a generated image — not precise pattern simulation. Complex fabrics and special cuts may not render well. We assess product type before leaning on try-on.</p>
+            </div>
+            <div class="card limit-card">
+              <div class="limit-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M8 8H6a3 3 0 0 0 0 6h2"/>
+                  <path d="M16 8h2a3 3 0 0 1 0 6h-2"/>
+                  <path d="M8 11h8"/>
+                  <path d="M12 5v2M12 17v2"/>
+                </svg>
+              </div>
+              <div class="label">Modules need readiness</div>
+              <p>Inventory and checkout need an API. Idle playback needs your films. If it can’t integrate, we say so upfront.</p>
+            </div>
+            <div class="card limit-card">
+              <div class="limit-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M4 7.5A1.5 1.5 0 0 1 5.5 6H10l2 2h6.5A1.5 1.5 0 0 1 20 9.5v7A1.5 1.5 0 0 1 18.5 18h-13A1.5 1.5 0 0 1 4 16.5v-9z"/>
+                  <path d="M9 13h6M9 15.5h3.5"/>
+                </svg>
+              </div>
+              <div class="label">You bring product truth</div>
+              <p>Images, info and outfit presets need basic assets from your side. We configure; content accuracy stays with you.</p>
+            </div>
+            <div class="card limit-card">
+              <div class="limit-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="9" cy="8" r="3"/>
+                  <circle cx="16.5" cy="9.5" r="2.2"/>
+                  <path d="M3.5 18.5c.6-3 2.7-4.5 5.5-4.5s4.9 1.5 5.5 4.5"/>
+                  <path d="M14.2 14.2c1.7-.3 3.4.4 4.3 2.3"/>
+                </svg>
+              </div>
+              <div class="label">People still matter</div>
+              <p>Staff briefing frames the mirror as workload relief — not surveillance or replacement. Without that, deployment fails.</p>
+            </div>
+          </div>
+          <p class="body-copy" style="margin-top:1.2%; color:var(--mute-2);">No pop-up / event need and no interest in occasional sale-saving? Don’t rent it. Idle hardware hurts everyone.</p>
+          <div class="footer-bar">
+            <span class="sig">Practical over theatrical</span>
+            <span class="num">11 / 12</span>
+          </div>
+        </section>
+
+        <!-- 14 CLOSE -->
+        <section class="slide slide-close" data-title="Next">
+          <div style="height:100%;padding:5% 5.5%;display:flex;flex-direction:column;justify-content:space-between;">
+            <div>
+              <a class="brand-link" href="https://www.livvium.com" target="_blank" rel="noopener noreferrer" aria-label="LIVVIUM homepage">
+                <img class="wordmark wordmark-light" src="assets/livvium-wordmark-black.svg" alt="LIVVIUM" />
+              </a>
+            </div>
+            <div>
+              <p class="kicker">Next step</p>
+              <h1 style="color:#fff;max-width:14ch;">Start with a short rental. Read the interactions. Decide what’s next.</h1>
+              <p class="lede" style="margin-top:1.2em;">Promo window, pop-up, or a one-month pilot — we’ll scope the interface, install, and brief your team.</p>
+              <div class="cta-row">
+                <a class="pill pill-solid" href="https://www.livvium.com/contact#form" target="_blank" rel="noopener noreferrer">Start a conversation</a>
+                <a class="pill pill-ghost" href="https://www.livvium.com/solutions" target="_blank" rel="noopener noreferrer">Explore other solutions</a>
+                <p class="cta-note">Prefer the full site? Visit <a href="https://www.livvium.com" target="_blank" rel="noopener noreferrer">livvium.com</a> or <a href="https://www.livvium.com/solutions/in-store-experiences-activations" target="_blank" rel="noopener noreferrer">In-Store Experiences</a>.</p>
+              </div>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:flex-end;border-top:1px solid rgba(255,255,255,0.2);padding-top:1.2%; gap:12px; flex-wrap:wrap;">
+              <span style="color:rgba(255,255,255,0.7);font-size:clamp(11px,max(0.95cqw, 1.092vw),14px);font-weight:600;">
+                <a href="https://www.livvium.com" target="_blank" rel="noopener noreferrer" style="color:inherit;text-decoration:none;">LIVVIUM</a>
+                ·
+                <a href="https://www.livvium.com/solutions/in-store-experiences-activations" target="_blank" rel="noopener noreferrer" style="color:inherit;text-decoration:none;">In-Store Experiences</a>
+                · Smart Mirror Rental
+              </span>
+              <span style="color:rgba(255,255,255,0.7);font-size:clamp(11px,max(0.95cqw, 1.092vw),13px);font-weight:700;">12 / 12</span>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </div>
+
+    <div class="controls">
+      <button type="button" id="prev" aria-label="Previous slide">‹</button>
+      <span class="progress" id="progress">01 / 12</span>
+      <button type="button" id="next" aria-label="Next slide">›</button>
+      <span class="hint">Arrow keys · Space · F · Present</span>
+    </div>
+  </div>
+
+  <div class="deck-chrome" id="deck-chrome" aria-label="Deck navigation">
+    <nav class="nav-pill" id="nav-pill" aria-label="Sections"></nav>
+    <button type="button" class="present-toggle" id="present-toggle" aria-pressed="false">Present</button>
+    <button type="button" class="menu-toggle" id="menu-toggle" aria-expanded="false" aria-controls="mobile-menu">
+      <span class="menu-toggle__bars" aria-hidden="true"></span>
+      <span class="sr-only">Menu</span>
+    </button>
+  </div>
+  <nav class="mobile-menu" id="mobile-menu" hidden aria-label="Sections"></nav>
+
+  <div class="present-bar" id="present-bar" aria-live="polite">
+    <span class="present-count" id="present-count">01 / 12</span>
+    <span class="present-title" id="present-title">Cover</span>
+    <div class="present-dots" id="present-dots"></div>
+  </div>
+
+  <script>
+    const slides = [...document.querySelectorAll(".slide")];
+    const progress = document.getElementById("progress");
+    const navPill = document.getElementById("nav-pill");
+    const mobileMenu = document.getElementById("mobile-menu");
+    const menuToggle = document.getElementById("menu-toggle");
+    const presentToggle = document.getElementById("present-toggle");
+    const presentCount = document.getElementById("present-count");
+    const presentTitle = document.getElementById("present-title");
+    const presentDots = document.getElementById("present-dots");
+    const stage = document.getElementById("stage");
+
+    const SHORT = {
+      "Cover": "Cover",
+      "Journey": "Journey",
+      "Regular stores": "Stores",
+      "Pop-ups": "Pop-ups",
+      "What it is": "Offer",
+      "Who it helps": "Who",
+      "Experience": "Flow",
+      "Standard": "Standard",
+      "Standard pricing": "Pricing",
+      "Add-ons": "Add-ons",
+      "Limitations": "Limits",
+      "Next": "Next"
+    };
+
+    let i = 0;
+    let presenting = false;
+    let lockScroll = false;
+
+    slides.forEach((s, idx) => {
+      const title = s.dataset.title || ("Slide " + (idx + 1));
+      const short = SHORT[title] || title;
+      s.dataset.short = short;
+      s.id = "s" + (idx + 1);
+
+      const navBtn = document.createElement("button");
+      navBtn.type = "button";
+      navBtn.textContent = short;
+      navBtn.addEventListener("click", () => show(idx));
+      navPill.appendChild(navBtn);
+
+      const menuBtn = document.createElement("button");
+      menuBtn.type = "button";
+      menuBtn.textContent = title;
+      menuBtn.addEventListener("click", () => {
+        setMenu(false);
+        show(idx);
+      });
+      mobileMenu.appendChild(menuBtn);
+
+      const dot = document.createElement("button");
+      dot.type = "button";
+      dot.textContent = String(idx + 1).padStart(2, "0");
+      dot.setAttribute("aria-label", "Go to " + title);
+      dot.addEventListener("click", () => show(idx));
+      presentDots.appendChild(dot);
+    });
+
+    function setMenu(open) {
+      mobileMenu.hidden = !open;
+      menuToggle.setAttribute("aria-expanded", open ? "true" : "false");
+    }
+
+    function syncChrome() {
+      const title = slides[i].dataset.title || "";
+      const label = String(i + 1).padStart(2, "0") + " / " + String(slides.length).padStart(2, "0");
+      progress.textContent = label;
+      presentCount.textContent = label;
+      presentTitle.textContent = title;
+
+      [...navPill.children].forEach((btn, idx) => {
+        btn.setAttribute("aria-current", idx === i ? "true" : "false");
+      });
+      [...mobileMenu.children].forEach((btn, idx) => {
+        btn.setAttribute("aria-current", idx === i ? "true" : "false");
+      });
+      [...presentDots.children].forEach((btn, idx) => {
+        btn.setAttribute("aria-current", idx === i ? "true" : "false");
+      });
+
+      const activeNav = navPill.children[i];
+      if (activeNav) activeNav.scrollIntoView({ inline: "nearest", block: "nearest", behavior: "smooth" });
+    }
+
+    function writeUrl() {
+      const params = new URLSearchParams(location.search);
+      if (presenting) params.set("present", "1");
+      else params.delete("present");
+      const qs = params.toString();
+      history.replaceState(null, "", (qs ? "?" + qs : "") + "#s" + (i + 1));
+    }
+
+    function show(n, opts) {
+      const skipUrl = opts && opts.skipUrl;
+      const behavior = (opts && opts.behavior) || (presenting ? "auto" : "smooth");
+      i = ((n % slides.length) + slides.length) % slides.length;
+      slides.forEach((s, idx) => s.classList.toggle("active", idx === i));
+      syncChrome();
+
+      if (presenting) {
+        // absolute slides — no page scroll
+      } else {
+        lockScroll = true;
+        slides[i].scrollIntoView({ behavior, block: "start" });
+        window.setTimeout(() => { lockScroll = false; }, behavior === "smooth" ? 700 : 80);
+      }
+      if (!skipUrl) writeUrl();
+    }
+
+    function setPresent(on) {
+      presenting = !!on;
+      document.documentElement.classList.toggle("is-presenting", presenting);
+      presentToggle.setAttribute("aria-pressed", presenting ? "true" : "false");
+      presentToggle.textContent = presenting ? "Exit" : "Present";
+      setMenu(false);
+      writeUrl();
+      if (presenting) {
+        window.scrollTo(0, 0);
+        slides.forEach((s, idx) => s.classList.toggle("active", idx === i));
+      } else {
+        // restore browse scroll position to current slide
+        requestAnimationFrame(() => show(i, { behavior: "auto", skipUrl: true }));
+      }
+    }
+
+    function syncFromScroll() {
+      if (presenting || lockScroll) return;
+      const mark = window.scrollY + window.innerHeight * 0.35;
+      let current = 0;
+      slides.forEach((s, idx) => {
+        if (s.offsetTop <= mark) current = idx;
+      });
+      if (current !== i) {
+        i = current;
+        slides.forEach((s, idx) => s.classList.toggle("active", idx === i));
+        syncChrome();
+        writeUrl();
+      }
+    }
+
+    document.getElementById("prev").addEventListener("click", () => show(i - 1));
+    document.getElementById("next").addEventListener("click", () => show(i + 1));
+    presentToggle.addEventListener("click", () => setPresent(!presenting));
+    menuToggle.addEventListener("click", () => setMenu(mobileMenu.hidden));
+    document.addEventListener("click", (e) => {
+      if (!mobileMenu.hidden && !e.target.closest("#deck-chrome, #mobile-menu")) setMenu(false);
+    });
+
+    window.addEventListener("scroll", () => {
+      if (!presenting) requestAnimationFrame(syncFromScroll);
+    }, { passive: true });
+
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        if (!mobileMenu.hidden) { setMenu(false); return; }
+        if (presenting) { e.preventDefault(); setPresent(false); }
+        return;
+      }
+      // Arrow / space navigate in present; in browse only when not typing
+      const navKey = e.key === "ArrowRight" || e.key === "ArrowLeft" || e.key === "ArrowDown" || e.key === "ArrowUp" || e.key === " " || e.key === "PageDown" || e.key === "PageUp" || e.key === "Home" || e.key === "End";
+      if (!navKey) {
+        if (e.key === "p" || e.key === "P") setPresent(!presenting);
+        return;
+      }
+      if (!presenting && (e.key === "ArrowDown" || e.key === "ArrowUp")) return; // let page scroll
+      if (!presenting && (e.key === " " )) return;
+      e.preventDefault();
+      if (e.key === "ArrowRight" || e.key === "PageDown" || e.key === "ArrowDown" || e.key === " ") show(i + 1);
+      else if (e.key === "ArrowLeft" || e.key === "PageUp" || e.key === "ArrowUp") show(i - 1);
+      else if (e.key === "Home") show(0);
+      else if (e.key === "End") show(slides.length - 1);
+    });
+
+    let touchX = null;
+    stage.addEventListener("touchstart", (e) => {
+      if (!presenting) return;
+      touchX = e.changedTouches[0].screenX;
+    }, { passive: true });
+    stage.addEventListener("touchend", (e) => {
+      if (!presenting || touchX == null) return;
+      const dx = e.changedTouches[0].screenX - touchX;
+      if (Math.abs(dx) > 40) show(i + (dx < 0 ? 1 : -1));
+      touchX = null;
+    }, { passive: true });
+
+    const bootParams = new URLSearchParams(location.search);
+    const hashMatch = location.hash.match(/^#s(\d+)$/i);
+    const bootIndex = hashMatch ? Math.max(0, Math.min(slides.length - 1, parseInt(hashMatch[1], 10) - 1)) : 0;
+    if (bootParams.get("present") === "1") {
+      i = bootIndex;
+      slides.forEach((s, idx) => s.classList.toggle("active", idx === i));
+      syncChrome();
+      setPresent(true);
+    } else {
+      show(bootIndex, { behavior: "auto", skipUrl: true });
+      writeUrl();
+    }
+  </script>
+  <style>
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0,0,0,0);
+      white-space: nowrap;
+      border: 0;
+    }
+  </style>
+</body>
+</html>
